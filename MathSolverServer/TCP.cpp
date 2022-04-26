@@ -52,7 +52,7 @@ void TCP::ReadPacket()
 		});
 }
 
-void TCP::Send(Packet& packet)
+void TCP::Send(std::shared_ptr<Packet> packet)
 {
 	service.post(SendStrand.wrap([this, packet]() {
 		bool notWriting = sendQueue.empty();
@@ -76,7 +76,7 @@ uint32_t TCP::GetId()
 
 void TCP::Disconnect()
 {
-	if (!socket.is_open())
+	if (socket.is_open())
 		socket.close();
 }
 
@@ -84,11 +84,11 @@ void TCP::Write()
 {
 	if (sendQueue.empty())
 		return;
-	Packet& tempPacket = sendQueue.front();
-	vector<asio::mutable_buffers_1> tempVec = { asio::buffer(&tempPacket.GetHeader(), sizeof(Header)) };
-	if (tempPacket.GetHeader().size)
-		tempVec.push_back(asio::buffer(tempPacket.GetData(), tempPacket.GetHeader().size));
-	asio::async_write(socket, tempVec, [this](std::error_code errorCode, int len) {
+	std::shared_ptr<Packet> tempPacket = sendQueue.front();
+	vector<asio::mutable_buffers_1> tempVec = { asio::buffer(&tempPacket->GetHeader(), sizeof(Header)) };
+	if (tempPacket->GetHeader().size)
+		tempVec.push_back(asio::buffer(tempPacket->GetData(), tempPacket->GetHeader().size));
+	asio::async_write(socket, tempVec, [this](std::error_code errorCode, int len) { // needs to be wraped
 		if (errorCode) {
 			std::cout << "cant Write" << std::endl;
 		}

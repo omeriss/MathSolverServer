@@ -159,6 +159,8 @@
     <ClCompile Include="UDP.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ServerManager.h" />
     <ClInclude Include="TCP.h" />
     <ClInclude Include="HandlePacketFunctions.h" />
@@ -166,6 +168,9 @@
     <ClInclude Include="PacketExecutor.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="UDP.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MathSolverServer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

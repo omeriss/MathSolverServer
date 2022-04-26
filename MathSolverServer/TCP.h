@@ -14,7 +14,7 @@ public:
 	asio::ip::tcp::socket& GetSocket();
 	~TCP();
 	void ReadPacket();
-	void Send(Packet& packet);
+	void Send(std::shared_ptr<Packet> packet);
 	void SetId(uint32_t id);
 	uint32_t GetId();
 	void Disconnect();
@@ -23,7 +23,7 @@ private:
 	asio::io_service& service;
 	asio::io_service::strand SendStrand;
 	asio::ip::tcp::socket socket;
-	std::queue<Packet> sendQueue;
+	std::queue<std::shared_ptr<Packet>> sendQueue;
 	uint32_t id;
 };
 

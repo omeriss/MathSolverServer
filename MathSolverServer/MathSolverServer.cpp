@@ -9,6 +9,8 @@
 
 PacketExecutor* PacketExecutor::instance = NULL;
 ServerManager* ServerManager::instance = NULL;
+asio::ip::udp::socket* UDP::socket = NULL;
+UdpReadData UDP::readData;
 
 int main()
 {
