@@ -12,7 +12,7 @@ enum PacketsClient :EnumType {
 };
 
 enum PacketsServer :EnumType {
-	OnClientDisconnect, RoomResponse, Audios, SetLinePacket, SetCellPacket, UserConnected, UserDisconnect
+	OnClientDisconnect, RoomResponse, Audios, SetLinePacket, SetCellPacket, UserConnected, UserDisconnect, ChangeParticipentType
 };
 
 struct Header {

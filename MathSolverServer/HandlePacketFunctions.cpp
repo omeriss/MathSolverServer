@@ -22,20 +22,26 @@ void HandlePing(uint32_t id, Packet* p)
 		}
 
 	}
+	(*packet) << id;
 	(*packet) << roomCode;
 	ServerManager::GetInstance()->GetServer()->SendTcp(std::move(packet), id);
 }
 
 void HandleAudio(uint32_t id, Packet* p)
 {
+	ServerManager::GetInstance()->ActivateUdpOk(id);
 	std::shared_ptr<Packet> packet = std::make_shared<Packet>();
 	*packet = *p;
+	(*packet) << id;
 	//ServerManager::GetInstance()->GetServer()->SendAllUdp(std::move(packet), id);
+	//ServerManager::GetInstance()->SendFromTo(id, id, packet, 1);
 	ServerManager::GetInstance()->SendToRoomOf(id, std::move(packet), 1);
 }
 
 void HandleLine(uint32_t id, Packet* p)
 {
+	if (ServerManager::GetInstance()->GetParticipentType(id) != ParticipentType::Host)
+		return;
 	std::shared_ptr<Packet> packet = std::make_shared<Packet>();
 	packet->GetHeader().packetType = SendLine;
 	uint32_t to;
@@ -46,6 +52,8 @@ void HandleLine(uint32_t id, Packet* p)
 
 void HandleCell(uint32_t id, Packet* p)
 {
+	if (ServerManager::GetInstance()->GetParticipentType(id) < ParticipentType::Editor)
+		return;
 	std::shared_ptr<Packet> packet = std::make_shared<Packet>();
 	*packet = *p;
 	//ServerManager::GetInstance()->GetServer()->SendAllTcp(std::move(packet), id);

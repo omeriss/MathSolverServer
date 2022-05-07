@@ -3,11 +3,15 @@
 #include "Constants.h"
 #include <map>
 
+enum class ParticipentType:uint16_t {
+	WatchOnly = 0, Editor = 1, Host = 2
+};
+
 struct ClientInfo {
 	uint32_t id;
 	std::string roomCode;
-	bool isHost = false;
-	bool isEditor = false;
+	ParticipentType participentType = ParticipentType::WatchOnly;
+	bool UdpOk = false;
 };
 
 struct RoomInfo {
@@ -65,7 +69,8 @@ public:
 	/// <param name="id"> the id of the client we want to send the packet to his room</param>
 	/// <param name="packet"> the packet we want to send</param>
 	/// <param name="protocol"> the protocol we want to sent the packet with (tcp-0, udp-1)</param>
-	void SendToRoomOf(uint32_t id, std::shared_ptr<Packet> packet, int protocol = 0);
+	/// <param name="include"> if the func will send it to the sender too</param>
+	void SendToRoomOf(uint32_t id, std::shared_ptr<Packet> packet, int protocol = 0, bool include = false);
 	/// <summary>
 	/// send a packet from a client to another client only if they are in the same room
 	/// </summary>
@@ -74,6 +79,23 @@ public:
 	/// <param name="packet"> the packet we want to send</param>
 	/// <param name="protocol"> the protocol we want to sent the packet with (tcp-0, udp-1)</param>
 	void SendFromTo(uint32_t from, uint32_t to, std::shared_ptr<Packet> packet, int protocol = 0);
+	/// <summary>
+	/// set the udp ok of a client to true
+	/// </summary>
+	/// <param name="id"> the id of the client</param>
+	void ActivateUdpOk(uint32_t id);
+	/// <summary>
+	/// Get the participent type of a client
+	/// </summary>
+	/// <param name="id"> the id of the client</param>
+	/// <returns> the participent type of the client (enum)</returns>
+	ParticipentType GetParticipentType(uint32_t id);
+	/// <summary>
+	/// Get the participent type of a client
+	/// </summary>
+	/// <param name="id"> the id of the client</param>
+	/// <returns> the participent type of the client (enum)</returns>
+	void SetParticipentType(uint32_t id, ParticipentType participentType);
 private:
 	std::map<std::string, RoomInfo> rooms;
 	static ServerManager* instance;
