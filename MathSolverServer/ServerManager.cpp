@@ -69,7 +69,7 @@ std::string ServerManager::CreateRoom(uint32_t host)
     rooms[roomCode].host = clientsData[host];
     rooms[roomCode].clients.push_back(clientsData[host]);
     clientsData[host]->roomCode = roomCode;
-    SetParticipentType(host, ParticipentType::Host);
+    //SetParticipentType(host, ParticipentType::Host);
 
     std::cout << "[server] Created room: " << roomCode << std::endl;
     std::cout << "[" << host << "] Joined room "<< roomCode << " as a host"<< std::endl;
@@ -83,13 +83,13 @@ bool ServerManager::AddToRoom(std::string roomCode, uint32_t id)
         return false;
     auto cit = rooms.find(roomCode);
     if (cit != rooms.end()) {
-        for (auto client : cit->second.clients) {
-            std::shared_ptr<Packet> packet = std::make_shared<Packet>();
-            packet->GetHeader().packetType = UserConnected;
-            (*packet) << client->id;
-            (*packet) << client->participentType;
-            server->SendTcp(packet, id);
-        }
+        //for (auto client : cit->second.clients) {
+        //    std::shared_ptr<Packet> packet = std::make_shared<Packet>();
+        //    packet->GetHeader().packetType = UserConnected;
+        //    (*packet) << client->id;
+        //    (*packet) << client->participentType;
+        //    server->SendTcp(packet, id);
+        //}
         clientsData[id]->roomCode = roomCode;
         cit->second.clients.push_back(clientsData[id]);
         std::shared_ptr<Packet> packet = std::make_shared<Packet>();
@@ -101,6 +101,24 @@ bool ServerManager::AddToRoom(std::string roomCode, uint32_t id)
         return true;
     }
     return false;
+}
+
+void ServerManager::SendRoomClientsToConnectedUser(uint32_t id)
+{
+    if (!clientsData[id])
+        return;
+    auto cit = rooms.find(clientsData[id]->roomCode);
+    if (cit != rooms.end()) {
+        for (auto client : cit->second.clients) {
+            if (client->id != id) {
+                std::shared_ptr<Packet> packet = std::make_shared<Packet>();
+                packet->GetHeader().packetType = UserConnected;
+                (*packet) << client->id;
+                (*packet) << client->participentType;
+                server->SendTcp(packet, id);
+            }
+        }
+    }
 }
 
 void ServerManager::SendToRoomOf(uint32_t id, std::shared_ptr<Packet> packet, int protocol, bool include)
@@ -156,7 +174,7 @@ void ServerManager::SetParticipentType(uint32_t id, ParticipentType participentT
         return;
     clientsData[id]->participentType = participentType;
     std::shared_ptr<Packet> packet = std::make_shared<Packet>();
-    packet->GetHeader().packetType = ChangeParticipentType;
+    packet->GetHeader().packetType = ParticipentTypeChanged;
     (*packet) << id;
     (*packet) << participentType;
     SendToRoomOf(id, packet, 0, true);

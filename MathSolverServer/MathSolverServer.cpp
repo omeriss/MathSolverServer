@@ -1,5 +1,4 @@
 // MathSolverServer.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
 #include <iostream>
 #include <SFML/Audio.hpp>
@@ -14,7 +13,7 @@ UdpReadData UDP::readData;
 
 int main()
 {
-    sf::Thread t([]() {return; });
+    srand(time(NULL));
     PacketExecutor::GetInstance()->SetFunctions(CreatePacketVector);
     ServerManager::GetInstance()->Start(16016, 30);
     bool d = false;

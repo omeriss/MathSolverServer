@@ -1,6 +1,6 @@
 #include "UDP.h"
 
-UDP::UDP(asio::io_service& serv, asio::ip::udp::endpoint endpoint, uint32_t id) :service(serv), SendStrand(serv)
+UDP::UDP(asio::io_service& serv, asio::ip::udp::endpoint endpoint, uint32_t id) :NetworkProtocol(serv)
 {
 	std::string addr = endpoint.address().to_string() + ":" + std::to_string(endpoint.port());
 	UDP::readData.clientsMap.Set(addr, id);
@@ -24,7 +24,12 @@ void UDP::ReadPacket()
 		[temp](std::error_code errorCode, int len) {
 			if (errorCode) {
 				delete temp;
-				ReadPacket();
+				if (errorCode.value() != 995) {
+					ReadPacket();
+				}
+				else {
+					std::cout << "stopping udp";
+				}
 			}
 			else {
 				std::string addr = readData.reciveEndPoint.address().to_string() + ":" + std::to_string(readData.reciveEndPoint.port());
@@ -43,31 +48,9 @@ void UDP::ReadPacket()
 		});
 }
 
-void UDP::Send(std::shared_ptr<Packet> packet)
-{
-	service.post(SendStrand.wrap([this, packet]() {
-		bool notWriting = sendQueue.empty();
-		sendQueue.push(packet);
-		if (notWriting) {
-			Write();
-		}
-		}));
-}
-
-void UDP::SetId(uint32_t id)
-{
-	this->id = id;
-}
-
-
 asio::ip::udp::endpoint& UDP::GetEndPint()
 {
 	return endpoint;
-}
-
-uint32_t UDP::GetId()
-{
-	return id;
 }
 
 void UDP::Write()
@@ -81,6 +64,8 @@ void UDP::Write()
 	socket->async_send_to(tempVec, endpoint, [this](std::error_code errorCode, int len) {
 		if (errorCode) {
 			std::cout << "cant Write" << std::endl;
+			sendQueue.pop();
+			Write(); // check
 		}
 		else {
 			sendQueue.pop();

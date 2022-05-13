@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="NetworkProtocol.cpp" />
     <ClCompile Include="ServerManager.cpp" />
     <ClCompile Include="TCP.cpp" />
     <ClCompile Include="HandlePacketFunctions.cpp" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="NetworkProtocol.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ServerManager.h" />
     <ClInclude Include="TCP.h" />

@@ -8,11 +8,11 @@ typedef unsigned char Byte;
 typedef int32_t EnumType;
 
 enum PacketsClient :EnumType {
-	DisconnectFromServer, RoomRequest, Audiop, SendLine, SendCell
+	DisconnectFromServer, RoomRequest, Audiop, SendLine, SendCell, ChangeParticipentType
 };
 
 enum PacketsServer :EnumType {
-	OnClientDisconnect, RoomResponse, Audios, SetLinePacket, SetCellPacket, UserConnected, UserDisconnect, ChangeParticipentType
+	OnClientDisconnect, RoomResponse, Audios, SetLinePacket, SetCellPacket, UserConnected, UserDisconnect, ParticipentTypeChanged
 };
 
 struct Header {

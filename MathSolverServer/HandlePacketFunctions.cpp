@@ -14,17 +14,23 @@ void HandlePing(uint32_t id, Packet* p)
 	packet->GetHeader().packetType = RoomResponse;
 	if (roomCode == "") {
 		roomCode = ServerManager::GetInstance()->CreateRoom(id);
+		(*packet) << id;
+		(*packet) << roomCode;
+		ServerManager::GetInstance()->GetServer()->SendTcp(std::move(packet), id);
+		ServerManager::GetInstance()->SetParticipentType(id, ParticipentType::Host);
 	}
 	else {
 		if (!ServerManager::GetInstance()->AddToRoom(roomCode, id)) {
 			ServerManager::GetInstance()->Disconnect(id, false);
 			return;
 		}
-
+		else {
+			(*packet) << id;
+			(*packet) << roomCode;
+			ServerManager::GetInstance()->GetServer()->SendTcp(std::move(packet), id);
+			ServerManager::GetInstance()->SendRoomClientsToConnectedUser(id);
+		}
 	}
-	(*packet) << id;
-	(*packet) << roomCode;
-	ServerManager::GetInstance()->GetServer()->SendTcp(std::move(packet), id);
 }
 
 void HandleAudio(uint32_t id, Packet* p)
@@ -58,6 +64,17 @@ void HandleCell(uint32_t id, Packet* p)
 	*packet = *p;
 	//ServerManager::GetInstance()->GetServer()->SendAllTcp(std::move(packet), id);
 	ServerManager::GetInstance()->SendToRoomOf(id, std::move(packet));
+}
+
+void HandleParticipentTypeChanged(uint32_t id, Packet* p)
+{
+	if (ServerManager::GetInstance()->GetParticipentType(id) != ParticipentType::Host)
+		return;
+	uint32_t uid;
+	(*p) >> uid;
+	ParticipentType temp;
+	(*p) >> temp;
+	ServerManager::GetInstance()->SetParticipentType(uid, temp);
 }
 
 

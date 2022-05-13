@@ -64,6 +64,11 @@ public:
 	/// <returns> was the client added to the room (bool)</returns>
 	bool AddToRoom(std::string roomCode, uint32_t id);
 	/// <summary>
+	/// send a client connected packet for all the users in the room to a client
+	/// </summary>
+	/// <param name="id"> the id of the client</param>
+	void SendRoomClientsToConnectedUser(uint32_t id);
+	/// <summary>
 	/// send a packet to the room of a client
 	/// </summary>
 	/// <param name="id"> the id of the client we want to send the packet to his room</param>
