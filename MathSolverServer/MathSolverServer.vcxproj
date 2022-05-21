@@ -80,11 +80,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\asio\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\asio\include;C:\pybind11-2.9.1\include;C:\Users\user\AppData\Local\Programs\Python\Python310\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\user\AppData\Local\Programs\Python\Python310\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\asio\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\asio\include;C:\pybind11-2.9.1\include;C:\Users\user\AppData\Local\Programs\Python\Python310\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\user\AppData\Local\Programs\Python\Python310\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -162,7 +164,6 @@
   <ItemGroup>
     <ClInclude Include="Constants.h" />
     <ClInclude Include="NetworkProtocol.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="ServerManager.h" />
     <ClInclude Include="TCP.h" />
     <ClInclude Include="HandlePacketFunctions.h" />
@@ -173,6 +174,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MathSolverServer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\x64\Debug\fireBaseModule.py" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

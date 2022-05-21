@@ -68,9 +68,6 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkProtocol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -79,5 +76,11 @@
     <ResourceCompile Include="MathSolverServer.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="..\x64\Debug\fireBaseModule.py">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

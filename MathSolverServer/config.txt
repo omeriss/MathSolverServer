@@ -1,0 +1,4 @@
+port = 16016
+max_clients = 30
+email = servermain@server.com
+password  = 12345678

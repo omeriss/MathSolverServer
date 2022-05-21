@@ -7,11 +7,52 @@ ServerManager* ServerManager::GetInstance()
     return instance;
 }
 
-void ServerManager::Start(int16_t port, size_t maxClients)
+void ServerManager::DelInstance()
+{
+    ServerManager* temp = ServerManager::instance;
+    instance = nullptr;
+    if (temp != NULL)
+        delete temp;
+}
+
+void ServerManager::Start(int16_t port, size_t maxClients, std::string email, std::string password)
 {
     clientsData.resize(maxClients);
     server = new Server(maxClients);
     server->StartServer(port);
+
+    pythonWork = new asio::io_context::work(pythonContext);
+    pybind11::gil_scoped_release release();
+    std::thread* pythonThread = new std::thread([this]() {
+        pybind11::gil_scoped_acquire acquire();
+        pybind11::scoped_interpreter gard{};
+        pythonContext.run();
+        });
+    pythonThread->detach();
+
+    pythonContext.post([this]() {
+        this->fireBaseModule = pybind11::module_::import("fireBaseModule");
+    });
+
+    pythonContext.post([this]() {
+        auto initFireBase = fireBaseModule.attr("init_firebase");
+        initFireBase();
+    });
+
+    pythonContext.post([this, email, password, port, maxClients]() {
+        auto log_in = fireBaseModule.attr("log_in");
+        bool connected = pybind11::cast<bool>(log_in(email.c_str(), password.c_str()));
+        if (connected) {
+            std::cout << "connected to public database" << std::endl;
+            pythonContext.post([this, port, maxClients]() {
+                auto set_server = fireBaseModule.attr("set_server");
+                set_server(port, maxClients);
+            });
+        }
+        else {
+            std::cout << "can't connect to public database" << std::endl;
+        }
+    });
 }
 
 Server* ServerManager::GetServer()
@@ -41,6 +82,12 @@ void ServerManager::Disconnect(uint32_t id, bool remove)
         clientsData[id] = nullptr;
         std::cout << "[" << id << "] " << "Disconnected" << std::endl;
         server->Disconnect(id);
+
+        connectedClientsCount--;
+        pythonContext.post([this]() {
+            auto change_user_count = fireBaseModule.attr("change_user_count");
+            change_user_count(this->connectedClientsCount);
+        });
     }
     else {
         server->Disconnect(id, clientsData[id] == NULL);
@@ -51,6 +98,12 @@ void ServerManager::AddClient(uint32_t id)
 {
     clientsData[id] = new ClientInfo();
     clientsData[id]->id = id;
+
+    connectedClientsCount++;
+    pythonContext.post([this]() {
+        auto change_user_count = fireBaseModule.attr("change_user_count");
+        change_user_count(this->connectedClientsCount);
+    });
 }
 
 std::string ServerManager::CreateRoom(uint32_t host)
@@ -178,4 +231,20 @@ void ServerManager::SetParticipentType(uint32_t id, ParticipentType participentT
     (*packet) << id;
     (*packet) << participentType;
     SendToRoomOf(id, packet, 0, true);
+}
+
+ServerManager::ServerManager()
+{
+    this->connectedClientsCount = 0;
+}
+
+ServerManager::~ServerManager()
+{
+    std::cout << "exit" << std::endl;
+    pythonContext.post([this]() {
+        auto exit_fire_base = fireBaseModule.attr("exit_fire_base");
+        exit_fire_base();
+    });
+    delete pythonWork;
+    while (!pythonContext.stopped()) {}
 }

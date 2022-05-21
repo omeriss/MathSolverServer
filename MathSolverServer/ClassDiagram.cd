@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="NetworkProtocol">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAEACAAAAAEAACAAAAEAAAAMAAgA=</HashCode>
+      <FileName>NetworkProtocol.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Packet">
+    <Position X="5.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAEABAAACAAEAAAAAAAAAAMAAAAAAQAAEAACA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="header" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="PacketExecutor">
+    <Position X="8.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAQAAAAAAAAAAAAAAAACABAFAAAAAAEAgBgAAIAA=</HashCode>
+      <FileName>PacketExecutor.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ServerManager">
+    <Position X="2.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAMIAAICBBBBAAAAAAAACABAAEBI=</HashCode>
+      <FileName>ServerManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TCP">
+    <Position X="2.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAEAIAAAAAAAEAAAAAAAAAAAEAAAEAIAA=</HashCode>
+      <FileName>TCP.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TSUM&lt;KeyType, ValType&gt;">
+    <Position X="0.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAEAAABABAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UDP.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UDP">
+    <Position X="2.75" Y="4" Width="1.5" />
+    <AssociationLine Name="readData" Type="UdpReadData">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.217" Y="0.483" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAACAEAAAAASAAAAAAAAAAAAAAAAAAEAAEAAAEAIAA=</HashCode>
+      <FileName>UDP.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="readData" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Server">
+    <Position X="5.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AA4AAAAAAAAAAAAgAAAAQAAABAAAAAAAYEAgAgAAAAA=</HashCode>
+      <FileName>Server.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Header">
+    <Position X="8.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="UdpReadData">
+    <Position X="3" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAABEAAAAAAA=</HashCode>
+      <FileName>UDP.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="clientsMap" />
+    </ShowAsAssociation>
+  </Struct>
+  <Struct Name="RoomInfo">
+    <Position X="5.5" Y="13" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>ServerManager.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="host" />
+    </ShowAsAssociation>
+  </Struct>
+  <Struct Name="ClientInfo">
+    <Position X="5.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAgAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAgA=</HashCode>
+      <FileName>ServerManager.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="participentType" />
+    </ShowAsAssociation>
+  </Struct>
+  <Enum Name="ParticipentType">
+    <Position X="8" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAQAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ServerManager.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

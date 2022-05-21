@@ -1,12 +1,18 @@
 #pragma once
+#include <map>
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+#include <Python.h>
 #include "Server.h"
 #include "Constants.h"
-#include <map>
 
 enum class ParticipentType:uint16_t {
 	WatchOnly = 0, Editor = 1, Host = 2
 };
 
+/// <summary>
+/// struct to store clinet info
+/// </summary>
 struct ClientInfo {
 	uint32_t id;
 	std::string roomCode;
@@ -14,6 +20,9 @@ struct ClientInfo {
 	bool UdpOk = false;
 };
 
+/// <summary>
+/// struct to store room info
+/// </summary>
 struct RoomInfo {
 	vector<ClientInfo*> clients;
 	ClientInfo* host;
@@ -29,11 +38,17 @@ public:
 	/// <returns> The pointer to the instance of this class</returns>
 	static ServerManager* GetInstance();
 	/// <summary>
+	/// delete the instance of the severmanager
+	/// </summary>
+	static void DelInstance();
+	/// <summary>
 	/// Start the server
 	/// </summary>
 	/// <param name="port"> The port the server will start on</param>
 	/// <param name="maxClients"> The max amount of clients that can be connected at once</param>
-	void Start(int16_t port = 16016, size_t maxClients = 30);
+	/// <param name="email"> The username of the server account</param>
+	/// <param name="password"> The password of the server</param>
+	void Start(int16_t port = 16016, size_t maxClients = 30, std::string email = "", std::string password = "");
 	/// <summary>
 	/// Get the instace to the server
 	/// </summary>
@@ -102,9 +117,45 @@ public:
 	/// <returns> the participent type of the client (enum)</returns>
 	void SetParticipentType(uint32_t id, ParticipentType participentType);
 private:
+	/// <summary>
+	/// create a instance
+	/// </summary>
+	ServerManager();
+	/// <summary>
+	/// delete a instance
+	/// </summary>
+	~ServerManager();
+	/// <summary>
+	/// map of rooms by their room code
+	/// </summary>
 	std::map<std::string, RoomInfo> rooms;
+	/// <summary>
+	/// singleton instance to the servermanager 
+	/// </summary>
 	static ServerManager* instance;
+	/// <summary>
+	/// the data of all the connected clients
+	/// </summary>
 	vector<ClientInfo*> clientsData;
+	/// <summary>
+	/// the number of connected clients
+	/// </summary>
+	size_t connectedClientsCount;
+	/// <summary>
+	/// a pointer to the server
+	/// </summary>
 	Server* server;
+	/// <summary>
+	/// the context to run the python moudule for the firebase
+	/// </summary>
+	asio::io_context pythonContext;
+	/// <summary>
+	/// the pybind firebaes module written in python
+	/// </summary>
+	pybind11::module_ fireBaseModule;
+	/// <summary>
+	/// asio work to keep the python context alive
+	/// </summary>
+	asio::io_context::work* pythonWork;
 };
 
