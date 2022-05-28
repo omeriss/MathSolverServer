@@ -16,6 +16,7 @@ UdpReadData UDP::readData;
 
 BOOL WINAPI ConsoleCtrlHandler(DWORD ctrlType)
 {
+    ServerManager::GetInstance()->GetServer()->Kill();
     switch (ctrlType)
     {
     case CTRL_C_EVENT:

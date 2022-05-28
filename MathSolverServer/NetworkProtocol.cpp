@@ -7,6 +7,7 @@ NetworkProtocol::NetworkProtocol(asio::io_service& service) :service(service), S
 
 void NetworkProtocol::Send(std::shared_ptr<Packet> packet)
 {
+	// async write
 	service.post(SendStrand.wrap([this, packet]() {
 		bool notWriting = sendQueue.empty();
 		sendQueue.push(packet);

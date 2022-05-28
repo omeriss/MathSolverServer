@@ -16,6 +16,7 @@ enum class ParticipentType:uint16_t {
 struct ClientInfo {
 	uint32_t id;
 	std::string roomCode;
+	std::string userName;
 	ParticipentType participentType = ParticipentType::WatchOnly;
 	bool UdpOk = false;
 };
@@ -64,7 +65,7 @@ public:
 	/// Add a new clinet
 	/// </summary>
 	/// <param name="id"> The id of the new client</param>
-	void AddClient(uint32_t id);
+	void AddClient(uint32_t id, std::string& userName);
 	/// <summary>
 	/// create a new room
 	/// </summary>

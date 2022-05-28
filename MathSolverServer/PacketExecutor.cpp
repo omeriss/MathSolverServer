@@ -11,7 +11,7 @@ PacketExecutor* PacketExecutor::GetInstance()
     return instance;
 }
 
-void PacketExecutor::HandlePacket(uint32_t id,Packet* packet)
+void PacketExecutor::HandlePacket(uint32_t id, Packet* packet)
 {
     if (!packet)
         return;
@@ -22,6 +22,8 @@ void PacketExecutor::HandlePacket(uint32_t id,Packet* packet)
 
 void PacketExecutor::Udate()
 {
+
+    // make sure that this is not dont by 2 threads at the same time
     mutex.lock();
     while (!packetQueue.empty()) {
         tempQueue.push(packetQueue.front());
@@ -31,8 +33,8 @@ void PacketExecutor::Udate()
 
     while (!tempQueue.empty()) {
         Packet* tempP = tempQueue.front().second;
-        
-        packetFunctions[tempP->GetHeader().packetType](tempQueue.front().first,tempP);
+
+        packetFunctions[tempP->GetHeader().packetType](tempQueue.front().first, tempP);
 
         delete tempP;
 

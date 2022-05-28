@@ -24,3 +24,8 @@ Byte* Packet::GetData()
 {
 	return data.data();
 }
+
+Byte* Packet::GetDataFromRead()
+{
+	return data.data() + readFrom;
+}

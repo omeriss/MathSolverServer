@@ -75,8 +75,25 @@ void ServerManager::Disconnect(uint32_t id, bool remove)
                 if ((*clientIterator)->id == id)
                     break;
             }
-            if (clientIterator != roomIterator->second.clients.end())
-                roomIterator->second.clients.erase(clientIterator);
+
+            if (clientIterator != roomIterator->second.clients.end()) {
+                if ((*clientIterator)->participentType == ParticipentType::Host) {
+                    if (roomIterator->second.clients.size() == 1) {
+                        rooms.erase(roomIterator);
+                    }
+                    else {
+                        if (roomIterator->second.clients[0]->id != id) {
+                            SetParticipentType(roomIterator->second.clients[0]->id, ParticipentType::Host);
+                        }
+                        else {
+                            SetParticipentType(roomIterator->second.clients[1]->id, ParticipentType::Host);
+                        }
+                        roomIterator->second.clients.erase(clientIterator);
+                    }
+                }
+                else
+                    roomIterator->second.clients.erase(clientIterator);
+            }
         }
         delete clientsData[id];
         clientsData[id] = nullptr;
@@ -94,10 +111,11 @@ void ServerManager::Disconnect(uint32_t id, bool remove)
     }
 }
 
-void ServerManager::AddClient(uint32_t id)
+void ServerManager::AddClient(uint32_t id, std::string& userName)
 {
     clientsData[id] = new ClientInfo();
     clientsData[id]->id = id;
+    clientsData[id]->userName = userName;
 
     connectedClientsCount++;
     pythonContext.post([this]() {
@@ -149,6 +167,7 @@ bool ServerManager::AddToRoom(std::string roomCode, uint32_t id)
         packet->GetHeader().packetType = UserConnected;
         (*packet) << id;
         (*packet) << clientsData[id]->participentType;
+        (*packet) << clientsData[id]->userName;
         SendToRoomOf(id, packet);
         std::cout << "[" << id << "] Joined room " << roomCode << std::endl;
         return true;
@@ -168,6 +187,7 @@ void ServerManager::SendRoomClientsToConnectedUser(uint32_t id)
                 packet->GetHeader().packetType = UserConnected;
                 (*packet) << client->id;
                 (*packet) << client->participentType;
+                (*packet) << client->userName;
                 server->SendTcp(packet, id);
             }
         }

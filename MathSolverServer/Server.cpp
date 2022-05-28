@@ -7,15 +7,19 @@ Server::Server(size_t maxClients):acceptor(service)
 
 void Server::StartServer(int16_t port)
 {
+	// bind
 	UDP::socket = new asio::ip::udp::socket(service, asio::ip::udp::endpoint(asio::ip::udp::v4(), port));
 	UDP::ReadPacket();
 	auto sptr = std::make_shared<TCP>(service);
 	asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
 	acceptor.open(endpoint.protocol());
 
+	// listen
 	acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
 	acceptor.bind(endpoint);
 	acceptor.listen();
+
+	// accept
 	acceptor.async_accept(sptr->GetSocket(), [=](asio::error_code errorCode) {
 		this->ConnectClient(sptr, errorCode);
 		});
@@ -27,11 +31,15 @@ void Server::ConnectClient(std::shared_ptr<TCP> sptr, asio::error_code& errorCod
 {
 	if (!errorCode) {
 		int i = 0;
+
+		// add the client to the vec
 		for (auto& con : connections) {
 			if (!con.first || !con.first->GetSocket().is_open()) {
 				sptr->SetId(i);
 				con.first = std::move(sptr);
 				std::cout << con.first->GetSocket().remote_endpoint().address() << "\n";
+
+				// create udp
 				con.second = std::make_shared<UDP>(
 					service,
 					asio::ip::udp::endpoint(con.first->GetSocket().remote_endpoint().address(),
@@ -55,6 +63,7 @@ void Server::ConnectClient(std::shared_ptr<TCP> sptr, asio::error_code& errorCod
 
 	auto nextSptr = std::make_shared<TCP>(service);
 
+	// accept another client
 	acceptor.async_accept(nextSptr->GetSocket(), [this, nextSptr](asio::error_code errorCode) {
 		this->ConnectClient(nextSptr, errorCode);
 		});
@@ -105,5 +114,10 @@ void Server::Disconnect(uint32_t id, bool remove)
 		connections[id].first = nullptr;
 		connections[id].second = nullptr;
 	}
+}
+
+void Server::Kill()
+{
+	this->service.stop();
 }
 

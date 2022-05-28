@@ -54,12 +54,31 @@ public:
 	/// <param name="id"> the id of the clinet we want to disconnect</param>
 	/// <param name="remove"> if true, the client will also be removed from the clinets vector</param>
 	void Disconnect(uint32_t id, bool remove = true);
+	/// <summary>
+	/// stops the server
+	/// </summary>
+	void Kill();
 
 
 private:
+	/// <summary>
+	/// the io service to run async
+	/// </summary>
 	asio::io_service service;
+
+	/// <summary>
+	/// the thread to run the io context
+	/// </summary>
 	std::thread serviceThread;
+
+	/// <summary>
+	/// lisenner
+	/// </summary>
 	asio::ip::tcp::acceptor acceptor;
+
+	/// <summary>
+	/// the connections to the clients
+	/// </summary>
 	vector<std::pair<std::shared_ptr<TCP>, std::shared_ptr<UDP>>> connections;
 };
 

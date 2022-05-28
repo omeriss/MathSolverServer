@@ -7,11 +7,14 @@ void DisconnectClient(uint32_t id, Packet* p)
 
 void HandlePing(uint32_t id, Packet* p)
 {
-	std::string roomCode;
+	std::string roomCode, username;
 	(*p) >> roomCode;
-	ServerManager::GetInstance()->AddClient(id);
+	(*p) >> username;
+	ServerManager::GetInstance()->AddClient(id, username);
 	std::shared_ptr<Packet> packet = std::make_shared<Packet>();
 	packet->GetHeader().packetType = RoomResponse;
+
+	// create new room
 	if (roomCode == "") {
 		roomCode = ServerManager::GetInstance()->CreateRoom(id);
 		(*packet) << id;
@@ -20,6 +23,7 @@ void HandlePing(uint32_t id, Packet* p)
 		ServerManager::GetInstance()->SetParticipentType(id, ParticipentType::Host);
 	}
 	else {
+		// try to join room
 		if (!ServerManager::GetInstance()->AddToRoom(roomCode, id)) {
 			ServerManager::GetInstance()->Disconnect(id, false);
 			return;
@@ -37,6 +41,7 @@ void HandleAudio(uint32_t id, Packet* p)
 {
 	ServerManager::GetInstance()->ActivateUdpOk(id);
 	std::shared_ptr<Packet> packet = std::make_shared<Packet>();
+	// add id to the packet
 	*packet = *p;
 	(*packet) << id;
 	//ServerManager::GetInstance()->GetServer()->SendAllUdp(std::move(packet), id);
@@ -46,6 +51,7 @@ void HandleAudio(uint32_t id, Packet* p)
 
 void HandleLine(uint32_t id, Packet* p)
 {
+	// make sure the host sent this
 	if (ServerManager::GetInstance()->GetParticipentType(id) != ParticipentType::Host)
 		return;
 	std::shared_ptr<Packet> packet = std::make_shared<Packet>();
@@ -58,6 +64,7 @@ void HandleLine(uint32_t id, Packet* p)
 
 void HandleCell(uint32_t id, Packet* p)
 {
+	// make sure editor sent this
 	if (ServerManager::GetInstance()->GetParticipentType(id) < ParticipentType::Editor)
 		return;
 	std::shared_ptr<Packet> packet = std::make_shared<Packet>();
@@ -68,6 +75,7 @@ void HandleCell(uint32_t id, Packet* p)
 
 void HandleParticipentTypeChanged(uint32_t id, Packet* p)
 {
+	// make sure host sent this
 	if (ServerManager::GetInstance()->GetParticipentType(id) != ParticipentType::Host)
 		return;
 	uint32_t uid;
